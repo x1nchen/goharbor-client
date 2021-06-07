@@ -6,6 +6,7 @@ import (
 
 	runtimeclient "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
+	"github.com/mittwald/goharbor-client/v3/apiv1/repository"
 
 	"github.com/go-openapi/runtime"
 	"github.com/mittwald/goharbor-client/v3/apiv1/internal/api/client"
@@ -26,6 +27,7 @@ type Client interface {
 	registry.Client
 	replication.Client
 	system.Client
+	repository.Client
 }
 
 // RESTClient implements the Client interface as a REST client
@@ -35,6 +37,7 @@ type RESTClient struct {
 	registry    *registry.RESTClient
 	replication *replication.RESTClient
 	system      *system.RESTClient
+	repository  *repository.RESTClient
 }
 
 // NewRESTClient constructs a new REST client containing each sub client.
@@ -45,6 +48,7 @@ func NewRESTClient(cl *client.Harbor, authInfo runtime.ClientAuthInfoWriter) *RE
 		registry:    registry.NewClient(cl, authInfo),
 		replication: replication.NewClient(cl, authInfo),
 		system:      system.NewClient(cl, authInfo),
+		repository:  repository.NewClient(cl, authInfo),
 	}
 }
 
@@ -254,3 +258,8 @@ func (c *RESTClient) GetSystemGarbageCollection(ctx context.Context) (*model.Adm
 func (c *RESTClient) ResetSystemGarbageCollection(ctx context.Context) error {
 	return c.system.ResetSystemGarbageCollection(ctx)
 }
+// GetRepositoryTags wraps the GetRepositoryTags method of the repository sub-package.
+func (c *RESTClient) GetRepositoryTags(ctx context.Context, repoName string) ([]*model.DetailedTag,error) {
+	return c.repository.GetRepositoryTags(ctx, repoName)
+}
+
